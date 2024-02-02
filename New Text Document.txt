@@ -1,0 +1,77 @@
+  if (MessageBox.Show("هل انت متاكد من تعديل الفاتوره", "تاكيد", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+            {
+                db.excutedata("delete from buy where order_id=" + txtorderid.Text + " and branch_name=N'" + Properties.Settings.Default.branch_name + "'", "");
+                db.excutedata("delete from buy_details where order_id=" + txtorderid.Text + " and branch_name=N'" + Properties.Settings.Default.branch_name + "'", "");
+                db.excutedata("delete from item_card where order_id=" + txtorderid.Text + " and branch_name=N'" + Properties.Settings.Default.branch_name + "'", "");
+
+
+               
+
+
+                db.excutedata("delete from supplier_account where order_id=" + txtorderid.Text + " and branch_name=N'" + Properties.Settings.Default.branch_name + "'", "");
+                // tileItem1_ItemClick(null, null);
+
+
+
+                //======================================================
+                //decimal totalmoney55=0,sadad=0,balance55 = 0;
+                string d = dtpdate.Value.ToString("yyyy-MM-dd");
+                string discriptionupdate = "وارد فاتوره مشتريات من المورد"+" "+cbxsupplier.Text+"فاتوره رقم"+txtorderid.Text;
+
+                //insert into buy
+
+
+                
+                for (int i = 0; i <= dgv.Rows.Count-1; i++)
+                {
+                    decimal totalmoney55 = 0, sadad = 0, balance55 = 0;
+
+                    DataTable tbloldmoney = new DataTable();
+                    tbloldmoney.Clear();
+                    tbloldmoney = db.readdata("select*from supplier_account where sup_id=" + lblsup_id.Text + " and order_id<="+txtorderid.Text+"", "");
+                    for (int x = 0; x <= tbloldmoney.Rows.Count - 1; x++)
+                    {
+
+
+                        totalmoney55 += Convert.ToDecimal(tbloldmoney.Rows[x][9]);
+                        sadad += Convert.ToDecimal(tbloldmoney.Rows[x][10]);
+                    }
+                    try
+                    {
+                        balance55+= (totalmoney55 + Convert.ToDecimal(dgv.Rows[i].Cells[6].Value)) - sadad;
+                    }
+                    catch (Exception) { }
+
+                    //insert into buy_details
+
+                    //insert into item card
+                        db.excutedata("insert into supplier_account values(" + txtorderid.Text + "," + cbxsupplier.SelectedValue + ",N'" + cbxsupplier.Text + "',N'" + discriptionupdate + "',N'" + dgv.Rows[i].Cells[1].Value + "'," + dgv.Rows[i].Cells[3].Value + "," + dgv.Rows[i].Cells[6].Value + "," + txttotalorder.Text + ",N'" + txtnotes.Text + "'," + Convert.ToDecimal(dgv.Rows[i].Cells[6].Value) + ",0," + balance55 + ",N'" + Properties.Settings.Default.user_name + "',N'" + Properties.Settings.Default.branch_name + "',N'" + d + "',N'فاتوره')", "");
+                    }
+                decimal sadadtotal = 0;
+                DataTable tblupdatebalanceafterbill = new DataTable();
+                tblupdatebalanceafterbill.Clear();
+                tblupdatebalanceafterbill = db.readdata("select*from supplier_account where order_id>"+txtorderid.Text+" and sup_id="+lblsup_id.Text+ " ", "");
+                for(int u=0;u<=tblupdatebalanceafterbill.Rows.Count-1; u++)
+                {
+                    sadadtotal += Convert.ToDecimal(tblupdatebalanceafterbill.Rows[u][10]);
+                }
+
+                decimal diffrent = 0;
+
+                diffrent+= ( Convert.ToDecimal(txttotalorder.Text)- Convert.ToDecimal(lbltotalselectedbill.Text)) ;
+                DataTable tblupdate = new DataTable();
+                tblupdate.Clear();
+                tblupdate = db.readdata("select*from supplier_account where order_id>"+txtorderid.Text+" and sup_id="+lblsup_id.Text+"", "");
+                //for (int r = 0; r <= tblupdate.Rows.Count - 1; r++)
+                //{
+
+
+                   db.excutedata("update supplier_account set balance=balance+"+diffrent+"  where order_id>" + txtorderid.Text + " and sup_id=" + lblsup_id.Text + " and type=N'فاتوره'", "");
+                //}
+                    //==================================================================================================
+                //================================================================================================
+
+
+
+
+            }
