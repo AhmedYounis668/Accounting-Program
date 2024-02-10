@@ -1,2 +1,4 @@
 user name :123
 password:123
+you should add any money to the stoke when open the program to first time .
+
